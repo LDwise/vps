@@ -137,14 +137,10 @@ jobs:
           }
           EOF'
           
-      - name: Testing uuid
-        run: |
-          v2ray uuid
-          
       - name: Creating uuid config
         run: |
           for ((i = 1; i <= 10; i++)); do
-              uuid=$(v2ray uuid)[0]
+              uuid=$(v2ray uuid)
               # Add the new UUID to the clients array in the JSON file
               jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > server.json_tmp
               mv server.json_tmp /usr/local/etc/v2ray/config.json
