@@ -60,7 +60,7 @@ jobs:
       - name: Install v2ray
         run: |
           # 安裝執行檔和 .dat 資料檔 https://github.com/v2fly/fhs-install-v2ray
-          sudo bash <(sudo curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
+          curl -s https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh | sudo bash
           # Make Sure Installation Path V2Ray to comply with FHS https://github.com/v2ray/v2ray-core/issues/2328
           sudo mkdir -p /usr/local/etc/v2ray
           
