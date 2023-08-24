@@ -66,7 +66,7 @@ jobs:
           
       - name: Setup default vmess config files
         run: |
-          sudo cat << EOF > "/usr/local/etc/v2ray/config.json"
+          sudo sh -c ‘cat << EOF > "/usr/local/etc/v2ray/config.json"
           {
               "inbounds": [
                   {
@@ -87,8 +87,8 @@ jobs:
                   }
               ]
           }
-          EOF
-          sudo cat << EOF > "config.json"
+          EOF‘
+          sudo sh -c ‘cat << EOF > "config.json"
           {
               "inbounds": [
                   {
@@ -135,7 +135,7 @@ jobs:
                   ]
               }
           }
-          EOF
+          EOF’
           
       - name: Creating uuid config
         run: |
