@@ -143,10 +143,10 @@ jobs:
               uuid=$(v2ray uuid)
               echo $uuid
               # Add the new UUID to the clients array in the JSON file
-              sudo jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > server.json_tmp
+              sudo jq --arg uuid_tmp "$uuid" '.inbounds.settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > server.json_tmp
               mv server.json_tmp /usr/local/etc/v2ray/config.json
               # Setup client config
-              sudo jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext.users[0].id = $uuid_tmp' config_$i.json > config.json_tmp
+              sudo jq --arg uuid_tmp "$uuid" '.outbounds.settings.vnext.users.id = $uuid_tmp' config_$i.json > config.json_tmp
               mv config.json_tmp config_$i.json
           done
 
