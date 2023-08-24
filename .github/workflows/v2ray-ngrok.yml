@@ -66,7 +66,7 @@ jobs:
           
       - name: Setup default vmess config files
         run: |
-          cat << EOF > "server.json"
+          cat << EOF > "/usr/local/etc/v2ray/config.json"
           {
               "inbounds": [
                   {
@@ -142,8 +142,8 @@ jobs:
           for ((i = 1; i <= 10; i++)); do
               uuid=$(v2ray uuid)[0]
               # Add the new UUID to the clients array in the JSON file
-              jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' server.json > server.json_tmp
-              mv server.json_tmp server.json
+              jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > server.json_tmp
+              mv server.json_tmp /usr/local/etc/v2ray/config.json
               # Setup client config
               jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext.users += [{"id": $uuid_tmp}]' config_$i.json > config.json_tmp
               mv config.json_tmp config_$i.json
@@ -151,7 +151,7 @@ jobs:
 
       - name: Run v2ray
         run: |
-          nohup v2ray run -c /usr/local/etc/v2ray/server.json &
+          nohup v2ray run &
           ps -o pid,command
           
       - name: Commit and Push Changes
