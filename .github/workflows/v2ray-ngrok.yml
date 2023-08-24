@@ -66,7 +66,7 @@ jobs:
           
       - name: Setup default vmess config files
         run: |
-          cat << EOF > "/usr/local/etc/v2ray/config.json"
+          sudo cat << EOF > "/usr/local/etc/v2ray/config.json"
           {
               "inbounds": [
                   {
@@ -88,7 +88,7 @@ jobs:
               ]
           }
           EOF
-          cat << EOF > "config.json"
+          sudo cat << EOF > "config.json"
           {
               "inbounds": [
                   {
