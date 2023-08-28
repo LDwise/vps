@@ -70,7 +70,7 @@ jobs:
           {
               "inbounds": [
                   {
-                      "port": 10086, // server listening port
+                      "port": 10086,
                       "protocol": "vmess",
                       "settings": {
                           "clients": [
@@ -92,7 +92,7 @@ jobs:
           {
               "inbounds": [
                   {
-                      "port": 1080, // SOCKS proxy port, you need to configure the proxy in the browser and point to this port
+                      "port": 1080,
                       "listen": "127.0.0.1",
                       "protocol": "socks",
                       "settings": {
@@ -106,8 +106,8 @@ jobs:
                       "settings": {
                           "vnext": [
                               {
-                                  "address": "$ngrok_ip", // server address, please modify it to your own server ip or domain name
-                                  "port": $ngrok_port, // server port
+                                  "address": "$ngrok_ip",
+                                  "port": $ngrok_port,
                                   "users": [
                                       {
                                           "id": "b831381d-6324-4d53-ad4f-8cda48b30811"
