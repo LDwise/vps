@@ -1,44 +1,32 @@
-# This is a basic workflow to help you get started with Actions
-
 name: v2ray-ngrok
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
   # pull_request:
   #   branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   v2ray-ngrok:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
       - name: Install requirements
         run: |
           sudo apt-get update
           sudo apt-get dist-upgrade
-          sudo apt-get install curl socat jq
+          sudo apt-get install -y curl socat jq
 
       - name: Setup ngrok
         run: |
           curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
           echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
-          sudo apt update
-          sudo apt install ngrok
+          sudo apt-get install ngrok
           ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
           nohup ngrok tcp --region=ap 10086 &
 
@@ -46,17 +34,18 @@ jobs:
         run: |
           ngrok_address=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $4 ":" $5}')
           echo $ngrok_address
-          ngrok_ip=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $4}')
-          ngrok_port=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $5}')
-          echo "NGROK_IP=$ngrok_ip" >> $GITHUB_ENV
-          echo "NGROK_PORT=$ngrok_port" >> $GITHUB_ENV
-          echo "${{ env.NGROK_IP }}:${{ env.NGROK_PORT }}"
+          # ngrok_ip=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $4}')
+          # ngrok_port=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $5}')
+          # echo "NGROK_IP=$ngrok_ip" >> $GITHUB_ENV
+          # echo "NGROK_PORT=$ngrok_port" >> $GITHUB_ENV
+          # echo "${{ env.NGROK_IP }}:${{ env.NGROK_PORT }}"
+          echo "NGROK_IP=$(echo $ngrok_address | cut -d: -f1)" >> $GITHUB_ENV
+          echo "NGROK_PORT=$(echo $ngrok_address | cut -d: -f2)" >> $GITHUB_ENV
 
       - name: Install v2ray
         run: |
           # 安裝執行檔和 .dat 資料檔 https://github.com/v2fly/fhs-install-v2ray
           curl -s https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh | sudo bash
-          # Make Sure Installation Path V2Ray to comply with FHS https://github.com/v2ray/v2ray-core/issues/2328
           sudo mkdir -p /usr/local/etc/v2ray
 
       - name: Setup default vmess config files
@@ -131,21 +120,15 @@ jobs:
               }
           }
           EOF'
-          # cat /usr/local/etc/v2ray/config.json
-          # cat config.json
 
       - name: Creating uuid config
         run: |
           for ((i = 1; i <= 10; i++)); do
               uuid=$(v2ray uuid)
               echo $uuid
-              # Add the new UUID to the clients array in the JSON file
-              jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > server.json_tmp
-              sudo mv server.json_tmp /usr/local/etc/v2ray/config.json
-              # Setup client config
+              jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > /usr/local/etc/v2ray/config.json
               cp config.json config_$i.json
-              jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext[0].users[0].id = $uuid_tmp' config_$i.json > config.json_tmp
-              sudo mv config.json_tmp config_$i.json
+              jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext[0].users[0].id = $uuid_tmp' config_$i.json > config_$i.json
           done
 
       - name: Run v2ray
@@ -156,20 +139,14 @@ jobs:
       - name: Automatic Releases
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
-          # GitHub secret token
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          # Git tag (for automatic releases)
-          automatic_release_tag: "v1.0.0" # optional
-          # Should this release be marked as a draft?
-          # draft: "false" # optional
-          # Should this release be marked as a pre-release?
-          prerelease: "false" # optional, default is true
-          # Release title (for automatic releases)
-          # title: "v2ray client json files" # optional
-          # Assets to upload to the release
-          files: | # optional
+          automatic_release_tag: "v1.0.0"
+          # draft: "false"
+          prerelease: "false" # default is true
+          # title: "v2ray client json files"
+          files: |
             *.json
 
       - name: Keep Alive
         run: |
-          sleep 360m
+          sleep 60m
