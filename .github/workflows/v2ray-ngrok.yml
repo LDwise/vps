@@ -163,7 +163,7 @@ jobs:
           # Should this release be marked as a draft?
           # draft: "false" # optional
           # Should this release be marked as a pre-release?
-          # prerelease: "true" # optional, default is true
+          prerelease: "false" # optional, default is true
           # Release title (for automatic releases)
           # title: "v2ray client json files" # optional
           # Assets to upload to the release
