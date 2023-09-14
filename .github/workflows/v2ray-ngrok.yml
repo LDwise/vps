@@ -55,7 +55,9 @@ jobs:
           echo $ngrok_address
           ngrok_ip=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $4}')
           ngrok_port=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $5}')
-          echo "$ngrok_ip:$ngrok_port"
+          echo "NGROK_IP=$ngrok_ip" >> $GITHUB_ENV
+          echo "NGROK_PORT=$ngrok_port" >> $GITHUB_ENV
+          echo "${{ env.NGROK_IP }}:${{ env.NGROK_PORT }}"
 
       - name: Install v2ray
         run: |
@@ -106,8 +108,8 @@ jobs:
                       "settings": {
                           "vnext": [
                               {
-                                  "address": "$ngrok_ip",
-                                  "port": $ngrok_port,
+                                  "address": "${{ env.NGROK_IP }}",
+                                  "port": ${{ env.NGROK_PORT }},
                                   "users": [
                                       {
                                           "id": "b831381d-6324-4d53-ad4f-8cda48b30811"
