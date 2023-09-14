@@ -25,15 +25,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
-      # - name: Run a one-line script
-      #   run: echo Hello, world!
-
-      # # Runs a set of commands using the runners shell
-      # - name: Run a multi-line script
-      #   run: |
-      #     echo Add other actions to build,
-      #     echo test, and deploy your project.
       - name: Install requirements
         run: |
           sudo apt-get update
@@ -48,7 +39,7 @@ jobs:
           sudo apt install ngrok
           ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
           nohup ngrok tcp --region=ap 10086 &
-          
+
       - name: Show ngrok link
         run: |
           ngrok_address=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url' | awk -F'[:/]' '{print $4 ":" $5}')
@@ -65,7 +56,7 @@ jobs:
           curl -s https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh | sudo bash
           # Make Sure Installation Path V2Ray to comply with FHS https://github.com/v2ray/v2ray-core/issues/2328
           sudo mkdir -p /usr/local/etc/v2ray
-          
+
       - name: Setup default vmess config files
         run: |
           sudo sh -c 'cat << EOF > "/usr/local/etc/v2ray/config.json"
@@ -138,9 +129,9 @@ jobs:
               }
           }
           EOF'
-          cat /usr/local/etc/v2ray/config.json
-          cat config.json
-          
+          # cat /usr/local/etc/v2ray/config.json
+          # cat config.json
+
       - name: Creating uuid config
         run: |
           for ((i = 1; i <= 10; i++)); do
@@ -159,7 +150,7 @@ jobs:
         run: |
           nohup v2ray run &
           ps -o pid,command
-          
+
       - name: Commit and Push Changes
         run: |
           # sudo rsync -av --exclude '*/' /home/ VPNconfig/
@@ -168,7 +159,7 @@ jobs:
           git add ./*
           git commit -m "Update files"
           git push
-          
+
       - name: Keep Alive
         run: |
           sleep 360m
