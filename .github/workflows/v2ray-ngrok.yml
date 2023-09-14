@@ -127,7 +127,7 @@ jobs:
           for ((i = 1; i <= 10; i++)); do
               uuid=$(v2ray uuid)
               echo $uuid
-              jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > /usr/local/etc/v2ray/config.json
+              sudo jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > /usr/local/etc/v2ray/config.json
               cp config.json config_$i.json
               jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext[0].users[0].id = $uuid_tmp' config_$i.json > config_$i.json
           done
