@@ -129,7 +129,7 @@ jobs:
               echo $uuid
               sudo jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json | sudo tee /usr/local/etc/v2ray/config.json > /dev/null
               cp config.json config_$i.json
-              jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext[0].users[0].id = $uuid_tmp' config_$i.json > config_$i.json
+              jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext[0].users[0].id = $uuid_tmp' config_$i.json | tee config_$i.json > /dev/null
           done
 
       - name: Run v2ray
