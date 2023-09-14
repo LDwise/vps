@@ -146,6 +146,7 @@ jobs:
               jq --arg uuid_tmp "$uuid" '.inbounds[0].settings.clients += [{"id": $uuid_tmp}]' /usr/local/etc/v2ray/config.json > server.json_tmp
               sudo mv server.json_tmp /usr/local/etc/v2ray/config.json
               # Setup client config
+              copy config.json config_$i.json
               jq --arg uuid_tmp "$uuid" '.outbounds[0].settings.vnext[0].users[0].id = $uuid_tmp' config_$i.json > config.json_tmp
               sudo mv config.json_tmp config_$i.json
           done
