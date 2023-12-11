@@ -29,7 +29,8 @@ jobs:
           sudo apt update
           sudo apt install ngrok
           ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
-          nohup ngrok tcp --region=ap 10086 &
+          # nohup ngrok tcp --region=ap 10086 &
+          nohup ngrok tcp 10086 &
 
       - name: Show ngrok link
         run: |
